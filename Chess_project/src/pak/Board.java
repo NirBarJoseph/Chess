@@ -58,7 +58,9 @@ public class Board {
         return true;
     }
 
-    public boolean rm(byte r, byte c, boolean flag){
+    public boolean remove_piece(Location loc, boolean flag){ return this.remove_piece(loc.r, loc.c, flag);}
+
+    public boolean remove_piece(byte r, byte c, boolean flag){
         	/*	if the input is invalid	*/
         if ( (r > 7 || c > 7 || r < 0 || c < 0 || board[c][r] == 0) && flag ) {
             Utils.printf("Invalid position on the board\n");
@@ -100,7 +102,25 @@ public class Board {
         return true;
     }
 
-    public static boolean move_piece(){
+    public boolean move_piece(Move move, boolean color, byte type, byte promotion, boolean check_valid){
+        if (check_valid)
+            if (!Logic.is_valid(move, type, true))
+                return false;
+
+        //move the piece
+        /* remove "from" disc and possibly eaten enemy pieces */
+        this.remove_piece(move.from, false);
+        int toType = Main.board.get_piece(move.to);
+        if (toType >=0){
+            // update the pieces array if toType is piece
+            this.remove_piece(move.to, false);
+        }
+        //set the piece in target
+        //check if it's a promoted pawn
+        if (type == 0 && move.to.r == 7*(color ? 0 : 1)) {
+            type = promotion;
+        }
+        Main.board.set_piece(move.to, color , type, false);
         return true;
     }
 
@@ -152,6 +172,10 @@ public class Board {
         System.out.println("|");
     }
 
+    /*
+    This function returns the char representing a given abs piece
+    x = means error
+     */
     private char num_to_char(short num){
         if(num == 0) return ' ';
         else if(num == 1) return 'm';
@@ -217,7 +241,31 @@ public class Board {
 
     }
 
+    /*
+    * This function return the piece value in a given location
+    * i.e. the absolute value -1
+    * 0 = pawn
+    * 1 = knight
+    * 2 = bishop
+    * 3 = rook
+    * 4 = queen
+    * 5 = king*/
     public byte get_piece(byte c, byte r) {
         return (byte) (Math.abs(board [c][r]) - 1);
+    }
+
+    public byte get_piece(Location loc){ return (byte) (Math.abs(board [loc.c][loc.r]) - 1);}
+
+    /* checks for a mate / tie / check
+    * 0 for nothing , 1 for check, 2 for tie, 3 for mate (mate = tie + check)
+    */
+    public byte CMT(boolean turn) {
+        return (this.is_check(turn)) + (this.is_tie(!turn));
+    }
+
+    public byte is_tie(boolean turn) {
+    }
+
+    public byte is_check(boolean turn) {
     }
 }

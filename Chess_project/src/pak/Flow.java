@@ -7,25 +7,25 @@ package pak;
  */
 public class Flow {
 
-    public static boolean game_setting_function(String user_input) {
+    public static boolean game_settings_function(String user_input) {
 
         String[] args = user_input.split(" ");
         String cmd = args[0];
 
         if (cmd.equalsIgnoreCase("set"))
-            return setting_set(args);
+            return settings_set(args);
         if (cmd.equalsIgnoreCase("rm"))
-            return setting_remove(args[1]);
+            return settings_remove(args[1]);
         if (cmd.equalsIgnoreCase("difficulty"))
-            return setting_change_difficulty(args[1]);
+            return settings_change_difficulty(args[1]);
         if (cmd.equalsIgnoreCase("game_mode"))
-            return setting_game_mode(args[1]);
+            return settings_game_mode(args[1]);
         if (cmd.equalsIgnoreCase("user_color"))
-            return setting_user_color(args[1]);
+            return settings_user_color(args[1]);
         if (cmd.equalsIgnoreCase("load"))
-            return setting_load(args[1]);
+            return settings_load(args[1]);
         if (cmd.equalsIgnoreCase("next_player"))
-            return setting_next_player(args[1]);
+            return settings_next_player(args[1]);
         if (cmd.equalsIgnoreCase("print"))
             Main.board.print();
         if (cmd.equalsIgnoreCase("clear"))
@@ -39,18 +39,18 @@ public class Flow {
         return true;
     }
 
-    private static boolean setting_next_player(String arg) {
+    private static boolean settings_next_player(String arg) {
         if (arg.equalsIgnoreCase("white")) Main.turn = false;
         else Main.turn = true;
         Utils.printf("Next player is %s\n", arg);
         return true;
     }
 
-    private static boolean setting_load(String arg) {
+    private static boolean settings_load(String arg) {
         return true;
     }
 
-    private static boolean setting_user_color(String arg) {
+    private static boolean settings_user_color(String arg) {
         if( ! Main.game_mode){
             Utils.printf("Illegal command");
             return false;
@@ -63,7 +63,7 @@ public class Flow {
 
     }
 
-    private static boolean setting_game_mode(String arg) {
+    private static boolean settingss_game_mode(String arg) {
         try{
             int num = Integer.parseInt(arg);
             if(num == 1){
@@ -83,7 +83,7 @@ public class Flow {
         }
     }
 
-    private static boolean setting_change_difficulty(String arg) {
+    private static boolean settingss_change_difficulty(String arg) {
         if (Integer.parseInt(arg) > 5 || Integer.parseInt(arg) <= 0){
             Utils.printf("Invalid difficulty");
             return false;
@@ -93,29 +93,29 @@ public class Flow {
         return true;
     }
 
-    private static boolean setting_remove(String arg) {
+    private static boolean settingss_remove(String arg) {
         Location loc = new Location(arg);
-        if(!Main.board.rm(loc.r, loc.c, true)){
+        if(!Main.board.remove_piece(loc, true)){
             return false;
         }
         Utils.printf("Removed\n");
         return true;
     }
 
-    private static boolean setting_set(String[] args) {
+    private static boolean settingss_set(String[] args) {
         Location loc = new Location(args[1]);
         boolean color = args[2].equalsIgnoreCase("black");
-        byte type = Utils.piece_to_num(args[3]);
+        byte type = Utils.piece_to_type(args[3]);
         if (!Main.board.set_piece(loc, color, type, true)){
             return false;
         }
-        Utils.printf("Requested disc has been set\n");
+        Utils.printf("Requested piece has been set\n");
         return true;
     }
 
 
 
-    public static boolean game_function(String user_input){
+    public static byte game_function(String user_input){
 
         String[] args = user_input.split(" ");
         String cmd = args[0];
@@ -133,17 +133,36 @@ public class Flow {
         if (cmd.equalsIgnoreCase("main"))
 
         Utils.printf("Invalid command");
-        return false;
+        return 0;
     }
 
-    private static int game_move(String[] args) {
+    private static byte game_move(String[] args) {
         Location from = new Location(args[1]);
         Location to = new Location(args[3]);
         Move move = new Move(from, to);
+        // did the player asked for promotion? default = queen
         byte promotion = (args.length == 5) ?
-                Utils.piece_to_num(args[4]) : (byte) 4;
+                Utils.piece_to_type(args[4]) : (byte) 4;
         byte type = (Main.board.get_piece(from.c, from.r));
-        boolean move_success = Logic.move_piece(move, type, promotion, true)
+        boolean move_success = Main.board.move_piece(move, Main.turn, type, promotion, true);
+        if (move_success){
+            //check if the move leads to check/tie/mate
+            switch (Main.board.CMT(Main.turn)){
+                case (1) :
+                    Utils.printf ("Check!\n");
+                    Main.turn = !Main.turn;
+                    return 2;
+                case (2) :
+                    Utils.printf ("The game ends in a tie\n");
+                    Main.turn = !Main.turn;
+                    return 3;
+                case (3) :
+                    Utils.printf ("Mate! %s player wins the game\n", (Main.turn) ? "Black" : "White");
+                    return 4;
+            }
+            Main.turn = !Main.turn;
+            return 1;
+        }
         return 0;
     }
 

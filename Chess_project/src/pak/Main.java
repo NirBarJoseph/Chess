@@ -28,19 +28,22 @@ public class Main {
         while (no_one_won){
 
             if (!play){
+                // setting stage
                 Utils.printf("Enter_Settings:\n");
                 user_input = scn.nextLine();
                 if (user_input.equalsIgnoreCase("quit")){
                     Utils.printf("Bye\n");
                     break;
                 } else {
-                    Flow.game_setting_function(user_input);
+                    Flow.game_settings_function(user_input);
                 }
+
             } else {
-                //AI
+                // gaming stage
                 if (game_mode && !(user_color == turn)){
+                    //AI
                     //TODO minimax
-                    board.move_piece();
+//                    board.move_piece();
                     Utils.printf("AI Move:\n");
                     //TODO print move
 
@@ -55,12 +58,21 @@ public class Main {
                     break;
                 } else {
                     switch (Flow.game_function(user_input)){
-                        case -1: Utils.printf("Error in game functions");
+                        case -1:
+                            // unrecoverable error
+                            Utils.printf("Error in game functions");
                             System.exit(-1);
                             break;
-                        case 0: Utils.printf("Player Move:\n");
+                        case 0:
+                            // invalid input
                             break;
-                        default: Utils.printf("Someone won!\n");
+                        case 1:
+                            // player move made
+                            Utils.printf("Player Move:\n");
+                            break;
+                        default:
+                            // game ended
+                            Utils.printf("Someone won!\n");
                             no_one_won = false;
                             break;
                     }
@@ -80,6 +92,7 @@ public class Main {
 
 
 
+    //Constants
 
 
 }

@@ -11,13 +11,13 @@ public class Utils {
         System.out.format(to_print, args);
     }
 
-    public static byte piece_to_num(String piece){
-        if      (piece.equalsIgnoreCase("pawn"))    return 0;
-        else if (piece.equalsIgnoreCase("knight"))  return 1;
-        else if (piece.equalsIgnoreCase("bishop"))  return 2;
-        else if (piece.equalsIgnoreCase("rook"))    return 3;
-        else if (piece.equalsIgnoreCase("queen"))   return 4;
-        else if (piece.equalsIgnoreCase("king"))    return 5;
+    public static byte piece_to_type(String piece){
+        if (piece.equalsIgnoreCase("pawn"))    return 0;
+        if (piece.equalsIgnoreCase("knight"))  return 1;
+        if (piece.equalsIgnoreCase("bishop"))  return 2;
+        if (piece.equalsIgnoreCase("rook"))    return 3;
+        if (piece.equalsIgnoreCase("queen"))   return 4;
+        if (piece.equalsIgnoreCase("king"))    return 5;
         return -1;
     }
 
@@ -40,5 +40,16 @@ public class Utils {
         return true;
     }
 
+}
 
+class InvalidParameters extends Exception
+{
+    //Parameterless Constructor
+    public InvalidParameters() {}
+
+    //Constructor that accepts a message
+    public InvalidParameters(String message)
+    {
+        super(message);
+    }
 }

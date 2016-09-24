@@ -5,17 +5,8 @@ package pak;
  */
 public class Logic {
 
-    public static boolean move_piece(Move move, byte type, byte promotion, boolean check_valid) {
 
-        if (check_valid)
-            if (!is_valid(move, type, true))
-                return false;
-
-        //move the piece
-        /* remove "from" disc and possibly eaten enemy pieces */
-    }
-
-    private static boolean is_valid(Move move, byte type, boolean print_flag) {
+    protected static boolean is_valid(Move move, byte type, boolean print_flag) {
         	/*	checks valid position	*/
 //        if (mov.from.column > 7 || mov.from.column < 0 || mov.from.row > 7
 //                || mov.from.row < 0) {
